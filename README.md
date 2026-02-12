@@ -1,4 +1,3 @@
-# epiwatch
 
 # 🦠 EpiWatch AI - Outbreak Prediction Platform
 
