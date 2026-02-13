@@ -11,13 +11,12 @@ warnings.filterwarnings('ignore')
 
 # Page configuration
 st.set_page_config(
-    page_title="EpiWatch AI",
-    page_icon="🦠",
+    page_title="EpiWatch Monitor",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Theme colors
+# Theme colors with gradients
 def get_theme_css(dark_mode):
     if dark_mode:
         return """
@@ -28,10 +27,12 @@ def get_theme_css(dark_mode):
             --text-primary: #ffffff;
             --text-secondary: #cccccc;
             --text-muted: #888888;
-            --border-color: #262626;
+            --border-color: #333333;
             --button-bg: #ffffff;
             --button-text: #0f0f0f;
             --button-hover: #f5f5f5;
+            --accent-color: #3b82f6;
+            --card-bg: linear-gradient(145deg, #1a1a1a, #141414);
         }
         """
     else:
@@ -47,6 +48,8 @@ def get_theme_css(dark_mode):
             --button-bg: #1a1a1a;
             --button-text: #ffffff;
             --button-hover: #2a2a2a;
+            --accent-color: #2563eb;
+            --card-bg: linear-gradient(145deg, #ffffff, #f8f9fa);
         }
         """
 
@@ -55,7 +58,7 @@ def apply_theme(dark_mode):
     theme_css = get_theme_css(dark_mode)
     st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Times+New+Roman:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
     
     {theme_css}
     
@@ -66,156 +69,150 @@ def apply_theme(dark_mode):
     .stApp {{
         background: var(--bg-primary);
         font-family: 'Inter', sans-serif;
+        color: var(--text-primary);
     }}
     
     .brand-container {{
         text-align: center;
-        padding: 4rem 2rem;
-        margin-bottom: 3rem;
+        padding: 3rem 1rem 2rem 1rem;
+        margin-bottom: 2rem;
         border-bottom: 1px solid var(--border-color);
     }}
     
     .brand-title {{
-        font-size: 5rem;
-        font-weight: 700;
-        font-family: 'Times New Roman', serif;
+        font-size: 4.5rem;
+        font-weight: 800;
+        letter-spacing: -2px;
         color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        letter-spacing: 2px;
+        margin-bottom: 0.25rem;
     }}
     
     .brand-tagline {{
         font-size: 1.1rem;
         color: var(--text-muted);
-        font-weight: 400;
+        font-weight: 500;
         letter-spacing: 0.5px;
+        text-transform: uppercase;
     }}
     
-    .risk-preview-box {{
-        background: var(--bg-secondary);
-        border-radius: 8px;
-        padding: 2rem;
-        border-left: 3px solid;
-        margin: 2rem 0;
-    }}
-    
-    .risk-low {{
-        border-left-color: #10b981;
-    }}
-    
-    .risk-moderate {{
-        border-left-color: #f59e0b;
-    }}
-    
-    .risk-high {{
-        border-left-color: #ef4444;
-    }}
-    
-    .risk-level-text {{
-        font-size: 1.8rem;
-        font-weight: 600;
-        margin: 0.5rem 0;
-    }}
-    
-    .metric-card {{
-        background: var(--bg-secondary);
-        padding: 1.5rem;
-        border-radius: 8px;
+    /* Risk Hero Card */
+    .risk-hero-dboard {{
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 2.5rem;
         border: 1px solid var(--border-color);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.2s;
+        color: var(--text-primary);
+    }}
+    
+    .risk-hero-dboard:hover {{
+        transform: translateY(-2px);
+    }}
+    
+    .risk-label-top {{
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-muted);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }}
+    
+    .risk-value-huge {{
+        font-size: 5rem;
+        font-weight: 800;
+        line-height: 1;
         margin: 0.5rem 0;
+        font-family: 'Inter', sans-serif;
     }}
     
-    .alert-box {{
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin: 2rem 0;
-        border-left: 3px solid;
-        background: var(--bg-secondary);
+    .risk-level-badge {{
+        font-size: 1.25rem;
+        font-weight: 700;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 1rem 0;
+        display: inline-block;
     }}
     
-    .alert-high {{
-        border-left-color: #ef4444;
-        color: #dc2626;
+    .risk-context {{
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        width: 100%;
     }}
     
-    .alert-moderate {{
-        border-left-color: #f59e0b;
-        color: #d97706;
+    /* Stats Cards */
+    .stat-card-modern {{
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s;
+        color: var(--text-primary);
     }}
     
+    .stat-card-modern:hover {{
+        border-color: var(--text-muted);
+    }}
+    
+    .stat-label {{
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }}
+    
+    .stat-value {{
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+    }}
+    
+    .stat-icon {{
+        font-size: 1.5rem;
+        opacity: 0.8;
+    }}
+
+    /* Animations */
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: translateY(10px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
+    
+    .fade-in {{
+        animation: fadeIn 0.5s ease-out forwards;
+    }}
+    
+    /* Global Overrides */
     .stButton>button {{
         background: var(--button-bg);
         color: var(--button-text);
-        font-weight: 500;
-        font-size: 0.95rem;
-        padding: 0.75rem 2rem;
-        border-radius: 6px;
-        border: none;
-        width: 100%;
-        transition: all 0.2s ease;
-    }}
-    
-    .stButton>button:hover {{
-        background: var(--button-hover);
-        transform: translateY(-1px);
-    }}
-    
-    h1, h2, h3 {{
-        color: var(--text-primary);
         font-weight: 600;
-    }}
-    
-    h1 {{
-        font-size: 2rem;
-    }}
-    
-    h2 {{
-        font-size: 1.5rem;
-    }}
-    
-    h3 {{
-        font-size: 1.25rem;
-    }}
-    
-    .stSelectbox label, .stSelectbox div {{
-        color: var(--text-primary);
-    }}
-    
-    .stSelectbox>div>div {{
-        background: var(--bg-secondary);
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
         border: 1px solid var(--border-color);
-        border-radius: 6px;
     }}
     
-    .stTextInput>div>div>input {{
-        background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        color: var(--text-primary);
-    }}
-    
-    /* Hide Streamlit branding */
+    /* Hide Streamlit */
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     header {{visibility: hidden;}}
-    
-    /* Cleaner sidebar */
-    .css-1d391kg {{
-        background: var(--bg-primary);
-    }}
-    
-    /* Metric cards */
-    [data-testid="stMetricValue"] {{
-        color: var(--text-primary);
-    }}
-    
-    [data-testid="stMetricLabel"] {{
-        color: var(--text-muted);
-    }}
-    
-    [data-testid="stMetricDelta"] {{
-        color: var(--text-muted);
-    }}
-    
     </style>
     """, unsafe_allow_html=True)
 
@@ -235,7 +232,7 @@ if 'risk_level' not in st.session_state:
 if 'risk_color' not in st.session_state:
     st.session_state.risk_color = None
 if 'dark_mode' not in st.session_state:
-    st.session_state.dark_mode = False
+    st.session_state.dark_mode = True
 
 # Load Kaggle COVID-19 dataset
 @st.cache_data
@@ -511,13 +508,12 @@ def main():
     apply_theme(dark_mode)
     
     # Dark mode toggle - prominent button at top
-    dark_mode_icon = "🌙" if not dark_mode else "☀️"
     dark_mode_text = "Dark Mode" if not dark_mode else "Light Mode"
     
     # Top bar with dark mode toggle
-    col_toggle, col_spacer = st.columns([3, 20])
+    col_spacer, col_toggle = st.columns([15, 1])
     with col_toggle:
-        if st.button(f"{dark_mode_icon} {dark_mode_text}", key="dark_mode_toggle", use_container_width=True):
+        if st.button("💡", key="dark_mode_toggle", help="Toggle Light/Dark Mode", use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
@@ -525,54 +521,124 @@ def main():
     
     # Dark mode toggle in sidebar as well
     with st.sidebar:
-        st.markdown("### 🌓 Theme")
-        if st.button(f"{dark_mode_icon} Switch to {dark_mode_text}", key="dark_mode_toggle_sidebar", use_container_width=True):
+        st.markdown("### Display Settings")
+        if st.button(f"Switch to {dark_mode_text}", key="dark_mode_toggle_sidebar", use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
         
         st.markdown("---")
         
         # Show dataset status
-        st.markdown("### 📊 Dataset Status")
+        st.markdown("### Dataset Status")
         if 'Year' in df.columns:
-            st.success("✅ Real COVID-19 dataset loaded")
+            st.success("Dataset loaded successfully")
         else:
-            st.warning("⚠️ Using sample data. Download dataset from Kaggle.")
+            st.warning("Using sample data. Download dataset from Kaggle.")
     
-    # Page selection
-    st.sidebar.markdown("---")
-    page = st.sidebar.selectbox("Navigation", ["🏠 Landing & Filter", "📊 AI Analysis Dashboard"])
-    
-    if page == "🏠 Landing & Filter":
-        show_landing_page(df, dark_mode)
-    else:
+    # Page routing
+    if "navigation" not in st.session_state:
+        st.session_state.navigation = "Home"
+        
+    if st.session_state.navigation == "Home":
+        show_home_page(dark_mode)
+    elif st.session_state.navigation == "Selection":
+        show_selection_page(df, dark_mode)
+    elif st.session_state.navigation == "Analysis":
         show_analysis_page(df, dark_mode)
+    else:
+        # Fallback
+        st.session_state.navigation = "Home"
+        st.rerun()
 
-def show_landing_page(df, dark_mode):
-    """Page 1: Landing + Filter Dashboard"""
-    chart_colors = get_chart_colors(dark_mode)
-    
-    # Branding Section
+def show_home_page(dark_mode):
+    """Page 1: Splash / Home Screen"""
     st.markdown("""
-        <div class="brand-container">
-            <div class="brand-title">EpiWatch AI</div>
-            <div class="brand-tagline">Predicting outbreaks before they escalate</div>
+        <style>
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70vh;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .big-title {
+            font-size: 6rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            letter-spacing: -3px;
+        }
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+        .start-btn-container {
+            margin-top: 2rem;
+        }
+        
+        /* Subtle Background Image */
+        .stApp {{
+            background-color: { '#000000' if dark_mode else '#ffffff' };
+            background-image: linear-gradient({ 'rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.92)' if dark_mode else 'rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)' }), url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        
+        <div class="home-container">
+            <div class="big-title">EPIWATCH</div>
+            <div class="subtitle">Global Pathogen Surveillance System</div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        def start_app():
+            st.session_state.navigation = "Selection"
+            
+        st.button("Start Analysis", on_click=start_app, use_container_width=True, type="primary")
+
+def show_selection_page(df, dark_mode):
+    """Page 2: Selection & Risk Summary"""
+    chart_colors = get_chart_colors(dark_mode)
+
+    # Apply global background via CSS
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-color: { '#000000' if dark_mode else '#ffffff' };
+            background-image: linear-gradient({ 'rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.92)' if dark_mode else 'rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)' }), url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+    
+    # Header for Selection Page
+    st.markdown("""
+        <div style="margin-bottom: 2rem;">
+            <h2 style="margin: 0;">Global Epidemiology Monitor</h2>
+            <p style="color: var(--text-muted);">Select a region to analyze outbreak risks.</p>
         </div>
     """, unsafe_allow_html=True)
     
     # Dataset info
     if 'Year' not in df.columns:
-        st.info("💡 **Tip**: Download the COVID-19 dataset from [Kaggle](https://www.kaggle.com/datasets/josephassaker/covid19-global-dataset) and place it in this folder to use real data.")
+        st.info("Tip: Download the COVID-19 dataset from [Kaggle](https://www.kaggle.com/datasets/josephassaker/covid19-global-dataset) and place it in this folder to use real data.")
     
-    # Filter Panel
-    st.markdown("### Select Parameters")
-    
+    # Filter Panel - Clean & Minimal
     col1, col2, col3 = st.columns(3)
     
     with col1:
         countries = sorted(df['Country'].unique())
         selected_country = st.selectbox(
-            "Select Country",
+            "Location",
             options=countries,
             index=0 if st.session_state.selected_country is None else countries.index(st.session_state.selected_country) if st.session_state.selected_country in countries else 0
         )
@@ -580,7 +646,7 @@ def show_landing_page(df, dark_mode):
     with col2:
         years = sorted(df['Year'].unique(), reverse=True)
         selected_year = st.selectbox(
-            "Select Year",
+            "Year",
             options=years,
             index=0 if st.session_state.selected_year is None else years.index(st.session_state.selected_year) if st.session_state.selected_year in years else 0
         )
@@ -592,7 +658,7 @@ def show_landing_page(df, dark_mode):
             available_months = sorted(df['Month'].unique())
         
         selected_month = st.selectbox(
-            "Select Month",
+            "Timeframe",
             options=available_months,
             index=0 if st.session_state.selected_month is None else (available_months.index(st.session_state.selected_month) if st.session_state.selected_month in available_months else 0)
         )
@@ -602,13 +668,21 @@ def show_landing_page(df, dark_mode):
     st.session_state.selected_year = selected_year
     st.session_state.selected_month = selected_month
     
-    # Filter data
-    filtered_df = df[(df['Country'] == selected_country) & (df['Year'] == selected_year) & (df['Month'] == selected_month)].copy()
+    # 1. Filter by Country and Year first (Context for Anomaly Detection)
+    yearly_df = df[(df['Country'] == selected_country) & (df['Year'] == selected_year)].copy()
     
-    if len(filtered_df) > 0:
-        # Preprocess and analyze
-        filtered_df = preprocess_data(filtered_df)
-        filtered_df = detect_anomalies(filtered_df)
+    if len(yearly_df) > 0:
+        # 2. Preprocess and Detect Anomalies on the Full Year
+        yearly_df = preprocess_data(yearly_df)
+        yearly_df = detect_anomalies(yearly_df)
+        
+        # 3. Filter for the selected month to display
+        filtered_df = yearly_df[yearly_df['Month'] == selected_month].copy()
+        
+        if len(filtered_df) == 0:
+            st.warning("No data available for this month.")
+            return
+
         risk_score = calculate_risk_score(filtered_df)
         risk_level, risk_color = get_risk_level(risk_score)
         
@@ -618,42 +692,126 @@ def show_landing_page(df, dark_mode):
         st.session_state.risk_level = risk_level
         st.session_state.risk_color = risk_color
         
-        # Calculate quick stats
+        # Calculate stats
         total_cases = filtered_df['Cases'].sum()
         avg_daily = filtered_df['Cases'].mean()
         max_daily = filtered_df['Cases'].max()
         anomaly_count = (filtered_df['Anomaly'] == -1).sum()
         
-        # AI Risk Preview Box
-        risk_class = f"risk-{risk_level.lower()}"
-        confidence = 85 + np.random.randint(-5, 10)
+        # Calculate confidence based on data sufficiency and variance
+        data_points = len(filtered_df)
+        cv = filtered_df['Cases'].std() / (filtered_df['Cases'].mean() + 1e-10) # Coefficient of Variation
         
-        col1, col2 = st.columns([2, 1])
+        # Base confidence on data quantity
+        confidence_base = min(data_points * 2, 70) 
         
-        with col1:
-            text_color = "#1a1a1a" if not st.session_state.dark_mode else "#ffffff"
-            muted_color = "#6c757d" if not st.session_state.dark_mode else "#888888"
+        # Adjust based on volatility
+        volatility_penalty = min(cv * 20, 30)
+        
+        # Add small random fluctuation for "live" feel (simulated sensor noise)
+        jitter = np.random.randint(-2, 3)
+        
+        confidence_score = min(max(int(confidence_base + 25 - volatility_penalty + jitter), 45), 99)
+        
+        # Determine label
+        if confidence_score >= 80:
+            confidence_label = "High"
+            conf_color = "#10b981"
+        elif confidence_score >= 60:
+            confidence_label = "Medium"
+            conf_color = "#f59e0b"
+        else:
+            confidence_label = "Low"
+            conf_color = "#ef4444"
+
+        # --- NEW HERO SECTION ---
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        hero_c1, hero_c2, hero_c3 = st.columns([1.2, 1, 1])
+        
+        # 1. RISK HERO CARD
+        with hero_c1:
             st.markdown(f"""
-                <div class="risk-preview-box {risk_class}">
-                    <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-weight: 500;">Risk Assessment</h3>
-                    <div class="risk-level-text" style="color: {risk_color}; margin-bottom: 1rem;">{risk_level}</div>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0.5rem 0;">Risk Score: <span style="color: {risk_color}; font-weight: 500;">{risk_score:.1f}/100</span></p>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0.5rem 0;">Confidence: <span style="color: {risk_color}; font-weight: 500;">{confidence}%</span></p>
+                <div class="risk-hero-dboard fade-in" style="border-top: 4px solid {risk_color};">
+                    <div class="risk-label-top">Predictive Risk Assessment</div>
+                    <div class="risk-value-huge" style="color: {risk_color};">{risk_score:.1f}</div>
+                    <div class="risk-level-badge" style="background: {risk_color}20; color: {risk_color};">
+                        {risk_level.upper()}
+                    </div>
+                    <div class="risk-context">
+                        Anomalies detected: <b>{anomaly_count}</b><br>
+                        Confidence level: <b style="color: {conf_color}">{confidence_label} ({confidence_score}%)</b>
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("### Quick Stats")
-            st.metric("Total Cases", f"{total_cases:,.0f}")
-            st.metric("Avg Daily", f"{avg_daily:.0f}")
-            st.metric("Peak Daily", f"{max_daily:.0f}")
-            st.metric("Anomalies", f"{anomaly_count}")
-        
-        # Weekly Trend Preview
-        st.markdown("### Weekly Trend Preview")
+            
+        # 2. RISK GAUGE
+        with hero_c2:
+            fig_gauge = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=risk_score,
+                domain={'x': [0, 1], 'y': [0, 1]},
+                title={'text': "", 'font': {'size': 1}},
+                gauge={
+                    'axis': {'range': [None, 100], 'tickcolor': chart_colors['text'], 'visible': False},
+                    'bar': {'color': risk_color, 'thickness': 0.25},
+                    'bgcolor': "rgba(0,0,0,0)",
+                    'borderwidth': 0,
+                    'bordercolor': "rgba(0,0,0,0)",
+                    'steps': [
+                        {'range': [0, 100], 'color': f"rgba{tuple(int(chart_colors['bg'].lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) + (0.1,)}"}
+                    ],
+                }
+            ))
+            
+            fig_gauge.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font={'color': chart_colors['text'], 'family': "Inter"},
+                height=280,
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            st.plotly_chart(fig_gauge, use_container_width=True)
+            
+        # 3. QUICK STATS STACK
+        with hero_c3:
+            st.markdown(f"""
+                <div class="fade-in">
+                    <div class="stat-card-modern">
+                        <div>
+                            <div class="stat-label">Total Cases</div>
+                            <div class="stat-value">{total_cases:,.0f}</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-modern">
+                        <div>
+                            <div class="stat-label">Daily Average</div>
+                            <div class="stat-value">{avg_daily:.0f}</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-modern">
+                        <div>
+                            <div class="stat-label">Peak Volume</div>
+                            <div class="stat-value">{max_daily:.0f}</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-modern">
+                        <div>
+                            <div class="stat-label">Anomalies</div>
+                            <div class="stat-value" style="color: #ef4444;">{anomaly_count}</div>
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        # Weekly Trend Preview (Full Width)
+        st.markdown("### 30-Day Trajectory")
         filtered_df['Week'] = pd.to_datetime(filtered_df['Date']).dt.isocalendar().week
         weekly_data = filtered_df.groupby('Week')['Cases'].sum().reset_index()
         weekly_data.columns = ['Week', 'Total_Cases']
+        
+        # Smoothed area chart
+        fill_color = f"rgba{tuple(int(chart_colors['line'].lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) + (0.1,)}"
         
         fig_weekly = px.line(
             weekly_data,
@@ -661,27 +819,53 @@ def show_landing_page(df, dark_mode):
             y='Total_Cases',
             markers=True
         )
-        fig_weekly.update_traces(line_color=chart_colors['line'], marker_color=chart_colors['line'])
+        fig_weekly.update_traces(
+            line_color=chart_colors['line'], 
+            marker_color=chart_colors['line'],
+            line_shape='spline',
+            fill='tozeroy',
+            fillcolor=fill_color
+        )
         fig_weekly.update_layout(
             plot_bgcolor=chart_colors['bg'],
             paper_bgcolor=chart_colors['paper'],
             font=dict(color=chart_colors['text'], size=11),
-            xaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid'], title='Week'),
-            yaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid'], title='Cases'),
-            height=250,
+            xaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid'], title='', showgrid=False),
+            yaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid'], title='', showgrid=True),
+            height=300,
+            margin=dict(l=0, r=0, t=20, b=0),
             showlegend=False
         )
         st.plotly_chart(fig_weekly, use_container_width=True)
         
         # Analyze Button
-        if st.button("Analyze Outbreak Patterns", use_container_width=True):
-            st.rerun()
+        st.markdown("<br>", unsafe_allow_html=True)
+        col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1])
+        
+        with col_btn2:
+            def go_to_analysis():
+                st.session_state.navigation = "Analysis"
+                
+            st.button("Analyze Full Dataset", on_click=go_to_analysis, use_container_width=True, type="primary")
     else:
         st.warning("No data available for selected filters.")
 
 def show_analysis_page(df, dark_mode):
     """Page 2: AI Analysis Dashboard"""
     chart_colors = get_chart_colors(dark_mode)
+
+    # Apply global background via CSS
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-color: { '#000000' if dark_mode else '#ffffff' };
+            background-image: linear-gradient({ 'rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.92)' if dark_mode else 'rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)' }), url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
     
     # Check if data is available
     if st.session_state.data is None or st.session_state.selected_country is None:
@@ -695,32 +879,49 @@ def show_analysis_page(df, dark_mode):
     selected_country = st.session_state.selected_country
     selected_month = st.session_state.selected_month
     
+    # Navigation Buttons
+    nav_c1, nav_c2, _ = st.columns([1, 1, 6])
+    
+    with nav_c1:
+        def go_home():
+            st.session_state.navigation = "Home"
+        st.button("Home", on_click=go_home, use_container_width=True)
+        
+    with nav_c2:
+        def go_back():
+            st.session_state.navigation = "Selection"
+        st.button("Back", on_click=go_back, use_container_width=True)
+    
     # Header
     selected_year = st.session_state.selected_year
     st.markdown(f"""
-        <h1 style="margin-bottom: 0.5rem;">Analysis Dashboard</h1>
+        <h1 style="margin-bottom: 0.5rem;">Epidemic Analysis Dashboard</h1>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">
             {selected_country} • {selected_month} {selected_year}
         </p>
     """, unsafe_allow_html=True)
     
-    # Early Warning Alert Panel
+    # Early Warning Alert Panel (Full Width)
     if risk_level == "High":
         st.markdown(f"""
-            <div class="alert-box alert-high">
-                <h3 style="margin: 0 0 0.5rem 0; font-weight: 600;">High Outbreak Risk</h3>
-                <p style="font-size: 0.95rem; margin: 0;">
-                    Immediate attention recommended. Anomalous patterns detected.
-                </p>
+            <div class="alert-box alert-high fade-in">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div>
+                        <h3 style="margin: 0; font-weight: 700;">High Outbreak Risk Detected</h3>
+                        <p style="margin: 0; opacity: 0.9;">Immediate intervention recommended due to anomalous data patterns.</p>
+                    </div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
     elif risk_level == "Moderate":
         st.markdown(f"""
-            <div class="alert-box alert-moderate">
-                <h3 style="margin: 0 0 0.5rem 0; font-weight: 600;">Monitoring Required</h3>
-                <p style="font-size: 0.95rem; margin: 0;">
-                    Elevated patterns observed. Continued monitoring advised.
-                </p>
+            <div class="alert-box alert-moderate fade-in">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div>
+                        <h3 style="margin: 0; font-weight: 700;">Elevated Risk levels</h3>
+                        <p style="margin: 0; opacity: 0.9;">Monitor closely. Statistical deviations observed.</p>
+                    </div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
     
@@ -729,7 +930,13 @@ def show_analysis_page(df, dark_mode):
     
     with col1:
         # Outbreak Trend Graph
-        st.markdown("### Trend Analysis")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); height: 100%;">
+            <h3 style="margin-top: 0; margin-bottom: 1rem;">Trend Analysis</h3>
+        """, unsafe_allow_html=True)
+        
+        # Prepare colors
+        fill_color = f"rgba{tuple(int(chart_colors['line'].lstrip('#')[i:i+2], 16) for i in (0, 2, 4)) + (0.1,)}"
         
         fig = make_subplots(specs=[[{"secondary_y": False}]])
         
@@ -740,7 +947,9 @@ def show_analysis_page(df, dark_mode):
                 y=filtered_df['Cases'],
                 mode='lines+markers',
                 name='Daily Cases',
-                line=dict(color=chart_colors['line'], width=2),
+                line=dict(color=chart_colors['line'], width=2, shape='spline'),
+                fill='tozeroy',
+                fillcolor=fill_color,
                 marker=dict(size=4, color=chart_colors['line'])
             )
         )
@@ -752,7 +961,7 @@ def show_analysis_page(df, dark_mode):
                 y=filtered_df['Cases_MA7'],
                 mode='lines',
                 name='7-Day Average',
-                line=dict(color=chart_colors['line_secondary'], width=1.5, dash='dash')
+                line=dict(color=chart_colors['line_secondary'], width=1.5, dash='dash', shape='spline')
             )
         )
         
@@ -773,57 +982,93 @@ def show_analysis_page(df, dark_mode):
                     )
                 )
             )
+
+        # Create Animation Frames
+        frames = []
+        for k in range(1, len(filtered_df) + 1):
+            subset = filtered_df.iloc[:k]
+            frame_data = [
+                go.Scatter(x=subset['Date'], y=subset['Cases']),
+                go.Scatter(x=subset['Date'], y=subset['Cases_MA7'])
+            ]
+            if len(anomalies) > 0:
+                subset_anom = subset[subset['Anomaly'] == -1]
+                frame_data.append(go.Scatter(x=subset_anom['Date'], y=subset_anom['Cases']))
+            
+            frames.append(go.Frame(data=frame_data, name=str(k)))
+            
+        fig.frames = frames
         
         fig.update_layout(
             plot_bgcolor=chart_colors['bg'],
             paper_bgcolor=chart_colors['paper'],
             font=dict(color=chart_colors['text'], size=11),
-            xaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid']),
-            yaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid']),
+            xaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid'], range=[filtered_df['Date'].min(), filtered_df['Date'].max()]),
+            yaxis=dict(gridcolor=chart_colors['grid'], linecolor=chart_colors['grid'], range=[0, filtered_df['Cases'].max() * 1.1]),
             legend=dict(bgcolor=chart_colors['bg'], bordercolor=chart_colors['grid'], borderwidth=1),
             height=400,
-            hovermode='x unified'
+            hovermode='x unified',
+            updatemenus=[
+                dict(
+                    type="buttons",
+                    buttons=[
+                        dict(label="▶ Play",
+                             method="animate",
+                             args=[None, {"frame": {"duration": 50, "redraw": False},
+                                          "fromcurrent": True, "transition": {"duration": 0}}]),
+                        dict(label="⏸ Pause",
+                             method="animate",
+                             args=[[None], {"frame": {"duration": 0, "redraw": False},
+                                          "mode": "immediate",
+                                          "transition": {"duration": 0}}])
+                    ],
+                    pad={"r": 10, "t": 10},
+                    showactive=True,
+                    x=0.1,
+                    y=1.15
+                )
+            ]
         )
         
         st.plotly_chart(fig, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        # Risk Indicator Meter (Gauge)
-        st.markdown("### Risk Level")
+        # Key Insights & Metrics Stack
+        st.markdown("### Key Insights")
         
-        fig_gauge = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=risk_score,
-            domain={'x': [0, 1], 'y': [0, 1]},
-            title={'text': "Risk Score", 'font': {'color': '#ffffff', 'size': 16}},
-            gauge={
-                'axis': {'range': [None, 100], 'tickcolor': '#ffffff'},
-                'bar': {'color': risk_color},
-                'steps': [
-                    {'range': [0, 35], 'color': '#1a1a1a'},
-                    {'range': [35, 70], 'color': '#1a1a1a'},
-                    {'range': [70, 100], 'color': '#1a1a1a'}
-                ],
-                'threshold': {
-                    'line': {'color': risk_color, 'width': 3},
-                    'thickness': 0.75,
-                    'value': risk_score
-                }
-            }
-        ))
-        
-        fig_gauge.update_layout(
-            plot_bgcolor=chart_colors['bg'],
-            paper_bgcolor=chart_colors['paper'],
-            font=dict(color=chart_colors['text'], size=11),
-            height=300
-        )
-        
-        st.plotly_chart(fig_gauge, use_container_width=True)
+        # Calculate specific insights
+        growth_rate = ((filtered_df['Cases'].iloc[-1] - filtered_df['Cases'].iloc[0]) / (filtered_df['Cases'].iloc[0] + 1)) * 100
+        volatility = filtered_df['Cases'].std()
         
         st.markdown(f"""
-            <div style="text-align: center; margin-top: 1rem;">
-                <h3 style="color: {risk_color}; margin: 0; font-weight: 600;">{risk_level}</h3>
+            <div class="stat-card-modern fade-in">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="stat-label">Monthly Growth</div>
+                        <div class="stat-value" style="color: {'#ef4444' if growth_rate > 0 else '#10b981'};">
+                            {growth_rate:+.1f}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card-modern fade-in">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="stat-label">Data Volatility</div>
+                        <div class="stat-value">{volatility:.1f}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card-modern fade-in">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="stat-label">Risk Score</div>
+                        <div class="stat-value" style="color: {risk_color};">{risk_score:.1f}</div>
+                    </div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
     
@@ -863,7 +1108,10 @@ def show_analysis_page(df, dark_mode):
         st.dataframe(model_df, use_container_width=True, hide_index=True)
     
     # Prediction Section
-    st.markdown("### 7-Day Forecast")
+    st.markdown(f"""
+    <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 2rem;">
+        <h3 style="margin-top: 0; margin-bottom: 1rem;">7-Day Forecast</h3>
+    """, unsafe_allow_html=True)
     
     # Simple linear trend forecast
     recent_trend = filtered_df['Cases'].tail(7).values
@@ -926,6 +1174,8 @@ def show_analysis_page(df, dark_mode):
         with col3:
             forecast_change = ((forecast.mean() - recent_trend.mean()) / recent_trend.mean() * 100) if recent_trend.mean() > 0 else 0
             st.metric("Trend", f"{forecast_change:+.1f}%", "vs. recent avg")
+            
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Data Insights Section
     st.markdown("### Data Insights")
@@ -1024,7 +1274,10 @@ def show_analysis_page(df, dark_mode):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("#### Case Distribution")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem;">Case Distribution</h4>
+        """, unsafe_allow_html=True)
         fig_hist = px.histogram(
             filtered_df,
             x='Cases',
@@ -1041,9 +1294,13 @@ def show_analysis_page(df, dark_mode):
             showlegend=False
         )
         st.plotly_chart(fig_hist, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        st.markdown("#### Anomaly Detection")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem;">Anomaly Detection</h4>
+        """, unsafe_allow_html=True)
         fig_anomaly = px.scatter(
             filtered_df,
             x='Date',
@@ -1062,12 +1319,16 @@ def show_analysis_page(df, dark_mode):
             legend=dict(bgcolor=chart_colors['bg'], bordercolor=chart_colors['grid'], borderwidth=1)
         )
         st.plotly_chart(fig_anomaly, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Weekly and Daily Comparison
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("#### Weekly Trend")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem;">Weekly Trend</h4>
+        """, unsafe_allow_html=True)
         filtered_df['Week'] = pd.to_datetime(filtered_df['Date']).dt.isocalendar().week
         weekly_summary = filtered_df.groupby('Week').agg({
             'Cases': 'sum',
@@ -1099,7 +1360,10 @@ def show_analysis_page(df, dark_mode):
         st.plotly_chart(fig_weekly, use_container_width=True)
     
     with col2:
-        st.markdown("#### Daily Cases vs Moving Average")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem;">Daily Cases vs Moving Average</h4>
+        """, unsafe_allow_html=True)
         fig_ma = go.Figure()
         fig_ma.add_trace(go.Scatter(
             x=filtered_df['Date'],
@@ -1125,6 +1389,7 @@ def show_analysis_page(df, dark_mode):
             legend=dict(bgcolor=chart_colors['bg'], bordercolor=chart_colors['grid'], borderwidth=1)
         )
         st.plotly_chart(fig_ma, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Country Comparison Section
     st.markdown("### Country Comparison")
@@ -1139,7 +1404,10 @@ def show_analysis_page(df, dark_mode):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("#### Top 10 Countries (Same Month)")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem;">Top 10 Countries (Same Month)</h4>
+        """, unsafe_allow_html=True)
         fig_bar = px.bar(
             comparison_data,
             x='Cases',
@@ -1159,9 +1427,13 @@ def show_analysis_page(df, dark_mode):
         )
         fig_bar.update_traces(marker_color=chart_colors['line'])
         st.plotly_chart(fig_bar, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        st.markdown("#### Risk Score Distribution")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <h4 style="margin-top: 0; margin-bottom: 1rem;">Risk Score Distribution</h4>
+        """, unsafe_allow_html=True)
         # Calculate risk for top countries
         top_countries = comparison_data['Country'].head(5).tolist()
         risk_comparison = []
@@ -1192,60 +1464,112 @@ def show_analysis_page(df, dark_mode):
                 showlegend=False
             )
             st.plotly_chart(fig_risk, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
-    # Statistical Summary
-    st.markdown("### Statistical Summary")
+    # Statistical Summary Card
+    st.markdown("### Statistical Analysis")
     
-    col1, col2, col3 = st.columns(3)
+    stat_summary = filtered_df['Cases'].describe()
+    
+    col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("#### Descriptive Statistics")
-        stats_data = {
-            'Metric': ['Mean', 'Median', 'Std Dev', 'Min', 'Max', 'Range'],
-            'Value': [
-                f"{filtered_df['Cases'].mean():.2f}",
-                f"{filtered_df['Cases'].median():.2f}",
-                f"{filtered_df['Cases'].std():.2f}",
-                f"{filtered_df['Cases'].min():.0f}",
-                f"{filtered_df['Cases'].max():.0f}",
-                f"{filtered_df['Cases'].max() - filtered_df['Cases'].min():.0f}"
-            ]
-        }
-        stats_df = pd.DataFrame(stats_data)
-        st.dataframe(stats_df, use_container_width=True, hide_index=True)
-    
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-primary);">
+            <h4 style="margin-top:0;">Central Tendency</h4>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: var(--text-muted);">Mean</span>
+                <span style="font-weight: 600;">{stat_summary['mean']:,.1f}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: var(--text-muted);">Median</span>
+                <span style="font-weight: 600;">{stat_summary['50%']:,.1f}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">Standard Deviation</span>
+                <span style="font-weight: 600;">{stat_summary['std']:,.1f}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
     with col2:
-        st.markdown("#### Trend Analysis")
+        st.markdown(f"""
+        <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-primary);">
+            <h4 style="margin-top:0;">Distribution Range</h4>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: var(--text-muted);">Minimum</span>
+                <span style="font-weight: 600;">{stat_summary['min']:,.0f}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: var(--text-muted);">Maximum</span>
+                <span style="font-weight: 600;">{stat_summary['max']:,.0f}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">Interquartile Range</span>
+                <span style="font-weight: 600;">{stat_summary['75%'] - stat_summary['25%']:,.0f}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    
+    # Trend and Anomaly Summary Row
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_trend, col_anom = st.columns(2)
+    
+    with col_trend:
         # Calculate trend direction
         first_half = filtered_df['Cases'].head(len(filtered_df)//2).mean()
         second_half = filtered_df['Cases'].tail(len(filtered_df)//2).mean()
         trend_direction = "Increasing" if second_half > first_half else "Decreasing"
         trend_pct = abs((second_half - first_half) / first_half * 100) if first_half > 0 else 0
+        trend_color = "#ef4444" if trend_direction == "Increasing" else "#10b981"
         
-        trend_data = {
-            'Period': ['First Half', 'Second Half', 'Trend'],
-            'Avg Cases': [
-                f"{first_half:.1f}",
-                f"{second_half:.1f}",
-                f"{trend_direction} ({trend_pct:.1f}%)"
-            ]
-        }
-        trend_df = pd.DataFrame(trend_data)
-        st.dataframe(trend_df, use_container_width=True, hide_index=True)
+        st.markdown(f"""
+<div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); height: 100%; color: var(--text-primary);">
+<h4 style="margin-top: 0; margin-bottom: 1rem;">Trend Analysis</h4>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+<span style="color: var(--text-muted);">First Half Avg</span>
+<span style="font-weight: 600; font-family: 'Inter', sans-serif;">{first_half:,.1f}</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+<span style="color: var(--text-muted);">Second Half Avg</span>
+<span style="font-weight: 600; font-family: 'Inter', sans-serif;">{second_half:,.1f}</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="color: var(--text-muted);">Direction</span>
+<span style="font-weight: 700; color: {trend_color};">{trend_direction} ({trend_pct:.1f}%)</span>
+</div>
+</div>
+""", unsafe_allow_html=True)
     
-    with col3:
-        st.markdown("#### Anomaly Summary")
-        anomaly_summary = {
-            'Metric': ['Total Anomalies', 'Anomaly Rate', 'Avg Anomaly Score', 'Min Score'],
-            'Value': [
-                f"{anomaly_count}",
-                f"{(anomaly_count/len(filtered_df)*100):.1f}%",
-                f"{filtered_df['Anomaly_Score'].mean():.3f}",
-                f"{filtered_df['Anomaly_Score'].min():.3f}"
-            ]
-        }
-        anomaly_df = pd.DataFrame(anomaly_summary)
-        st.dataframe(anomaly_df, use_container_width=True, hide_index=True)
+    with col_anom:
+        # Calculate anomaly stats
+        anomaly_count = (filtered_df['Anomaly'] == -1).sum()
+        anomaly_rate = (anomaly_count/len(filtered_df)*100)
+        avg_score = filtered_df['Anomaly_Score'].mean()
+        min_score = filtered_df['Anomaly_Score'].min()
+        
+        st.markdown(f"""
+<div style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); height: 100%; color: var(--text-primary);">
+<h4 style="margin-top: 0; margin-bottom: 1rem;">Anomaly Summary</h4>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+<span style="color: var(--text-muted);">Total Anomalies</span>
+<span style="font-weight: 600; font-family: 'Inter', sans-serif;">{anomaly_count}</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+<span style="color: var(--text-muted);">Anomaly Rate</span>
+<span style="font-weight: 600; font-family: 'Inter', sans-serif;">{anomaly_rate:.1f}%</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+<span style="color: var(--text-muted);">Avg Anomaly Score</span>
+<span style="font-weight: 600; font-family: 'Inter', sans-serif;">{avg_score:.3f}</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="color: var(--text-muted);">Min Score</span>
+<span style="font-weight: 600; font-family: 'Inter', sans-serif;">{min_score:.3f}</span>
+</div>
+</div>
+""", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
